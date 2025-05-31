@@ -1,8 +1,8 @@
-package org.apache.plc4x.benchmarks.s7;
+package org.apache.plc4x.benchmarks.s7.s7connect;
 
 import com.github.s7connector.api.DaveArea;
 import com.github.s7connector.api.factory.S7ConnectorFactory;
-import org.apache.plc4x.benchmarks.s7.test.BaseTest;
+import org.apache.plc4x.benchmarks.s7.base.BaseTest;
 import org.apache.plc4x.java.s7.readwrite.tag.S7StringFixedLengthTag;
 import org.apache.plc4x.java.s7.readwrite.tag.S7Tag;
 

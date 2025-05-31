@@ -1,4 +1,4 @@
-package org.apache.plc4x.benchmarks.s7.test;
+package org.apache.plc4x.benchmarks.s7.base;
 
 import java.time.Duration;
 import java.time.LocalDate;

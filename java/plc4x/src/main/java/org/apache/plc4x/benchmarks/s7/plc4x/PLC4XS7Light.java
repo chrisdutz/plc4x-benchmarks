@@ -1,6 +1,6 @@
-package org.apache.plc4x.benchmarks.s7;
+package org.apache.plc4x.benchmarks.s7.plc4x;
 
-import org.apache.plc4x.benchmarks.s7.test.BaseTest;
+import org.apache.plc4x.benchmarks.s7.base.BaseTest;
 import org.apache.plc4x.java.api.PlcConnection;
 import org.apache.plc4x.java.api.PlcDriverManager;
 import org.apache.plc4x.java.api.messages.PlcReadRequest;

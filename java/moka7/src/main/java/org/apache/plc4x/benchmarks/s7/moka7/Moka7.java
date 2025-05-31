@@ -1,8 +1,8 @@
-package org.apache.plc4x.benchmarks.s7;
+package org.apache.plc4x.benchmarks.s7.moka7;
 
 import com.sourceforge.snap7.moka7.S7;
 import com.sourceforge.snap7.moka7.S7Client;
-import org.apache.plc4x.benchmarks.s7.test.BaseTest;
+import org.apache.plc4x.benchmarks.s7.base.BaseTest;
 import org.apache.plc4x.java.s7.readwrite.tag.S7StringFixedLengthTag;
 import org.apache.plc4x.java.s7.readwrite.tag.S7Tag;
 
