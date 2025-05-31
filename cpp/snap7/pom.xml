@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.apache.plc4x</groupId>
+    <artifactId>plc4x-benchmarks-cpp</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>plc4x-benchmarks-cpp-snap7</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Benchmark: Cpp: Snap7</name>
+
+  <properties>
+    <project.build.outputTimestamp>2024-02-16T14:53:02Z</project.build.outputTimestamp>
+    <unity.version>2.5.2</unity.version>
+    <option.with-proxies>OFF</option.with-proxies>
+  </properties>
+
+  <build>
+    <sourceDirectory>${project.basedir}/src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>com.googlecode.maven-download-plugin</groupId>
+        <artifactId>download-maven-plugin</artifactId>
+        <executions>
+          <!--
+            Get additional stuff we need for the build.
+          -->
+          <execution>
+            <id>get-unity</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://github.com/ThrowTheSwitch/Unity/archive/v${unity.version}.zip</url>
+              <unpack>true</unpack>
+              <outputDirectory>${project.build.directory}/dependency</outputDirectory>
+            </configuration>
+          </execution>
+          <!--
+            Get ClangFormat.cmake
+          -->
+          <!--execution>
+            <id>get-clang-format</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://raw.githubusercontent.com/zemasoft/clangformat-cmake/master/cmake/ClangFormat.cmake</url>
+              <unpack>true</unpack>
+              <outputDirectory>${project.build.directory}/dependency/clang-format</outputDirectory>
+            </configuration>
+          </execution-->
+        </executions>
+      </plugin>
+
+      <!--
+        Do the actual build.
+      -->
+      <plugin>
+        <groupId>com.googlecode.cmake-maven-project</groupId>
+        <artifactId>cmake-maven-plugin</artifactId>
+        <executions>
+          <!-- TODO: Commented out for now as when running in jenkins for code analysis, the second run would overwrite the results of the first -->
+          <!-- Generate the configuration for the main compilation -->
+          <!--execution>
+            <id>cmake-generate-compile</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+          <!- Compile the main code ->
+          <execution>
+            <id>cmake-execute-compile</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution-->
+          <!-- Generate the configuration for the test compilation -->
+          <execution>
+            <id>cmake-generate-test-compile</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <options>
+                <option>-DUNITY_VERSION:STRING=${unity.version}</option>
+                <option>-DBUILD_PHASE=test-compile</option>
+              </options>
+            </configuration>
+          </execution>
+          <!-- Compile the test code -->
+          <execution>
+            <id>cmake-execute-test-compile</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <!-- Execute the tests -->
+          <execution>
+            <id>cmake-run-tests</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <buildDirectory>${project.build.directory}/build</buildDirectory>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <!--
+            Actually the path to the CMakeList.txt file which then again
+            tells to tool where to find the sources.
+          -->
+          <sourcePath>${project.basedir}/src</sourcePath>
+          <!--
+            Path to where the build configuration is generated
+            (This directory is then used in the compile step to actually perform the build)
+          -->
+          <targetPath>${project.build.directory}/build</targetPath>
+          <!--
+            Name of the generator the compile step will be executing.
+          -->
+          <generator>${cmake.generator}</generator>
+          <!-- The directory where the "generate" step generated the build configuration -->
+          <projectDirectory>${project.build.directory}/build</projectDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>update-generated-code</id>
+      <build>
+        <plugins>
+          <!--
+            Generate the driver code.
+          -->
+          <plugin>
+            <groupId>org.apache.plc4x.plugins</groupId>
+            <artifactId>plc4x-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>generate-driver-modbus</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>generate-driver</goal>
+                </goals>
+                <configuration>
+                  <protocolName>modbus</protocolName>
+                  <languageName>c</languageName>
+                  <outputFlavor>read-write</outputFlavor>
+                  <outputDir>${project.basedir}/generated-sources</outputDir>
+                </configuration>
+              </execution>
+              <execution>
+                <id>generate-driver-plc4x</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>generate-driver</goal>
+                </goals>
+                <configuration>
+                  <protocolName>plc4x</protocolName>
+                  <protocolVersion>0</protocolVersion>
+                  <languageName>c</languageName>
+                  <outputFlavor>read-write</outputFlavor>
+                  <outputDir>${project.basedir}/generated-sources</outputDir>
+                </configuration>
+              </execution>
+              <execution>
+                <id>generate-driver-s7</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>generate-driver</goal>
+                </goals>
+                <configuration>
+                  <protocolName>s7</protocolName>
+                  <languageName>c</languageName>
+                  <outputFlavor>read-write</outputFlavor>
+                  <outputDir>${project.basedir}/generated-sources</outputDir>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apahce.plg4x</groupId>
+        <artifactId>plc4x-benchmarks</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.apache.plc4x</groupId>
+    <artifactId>plc4x-benchmarks-cpp</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>snap7</module>
+    </modules>
+
+    <profiles>
+        <!-- Profile for linux x86_64 (mainly Intel Processors) (Self-Enabling) -->
+        <profile>
+            <id>.os-linux-x86_64</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>Linux</name>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <os.suffix>linux</os.suffix>
+                <os.classifier>linux-x86_64</os.classifier>
+                <cmake.generator>Unix Makefiles</cmake.generator>
+            </properties>
+        </profile>
+        <!-- Profile for linux amd64 (mainly AMD Processors) (Self-Enabling) -->
+        <profile>
+            <id>.os-linux-amd64</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>Linux</name>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <os.suffix>linux</os.suffix>
+                <os.classifier>linux-amd64</os.classifier>
+                <cmake.generator>Unix Makefiles</cmake.generator>
+            </properties>
+        </profile>
+        <!-- Profile for linux aarch64 (mainly newer Mac or Raspberry PI Processors) (Self-Enabling) -->
+        <profile>
+            <id>.os-linux-aarch64</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>Linux</name>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <os.suffix>linux</os.suffix>
+                <os.classifier>linux-${os.arch}</os.classifier>
+                <cmake.generator>Unix Makefiles</cmake.generator>
+            </properties>
+        </profile>
+        <!-- Profile for mac x86_64 (mainly Intel Processors) (Self-Enabling) -->
+        <profile>
+            <id>.os-mac-x86_64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <os.suffix>mac</os.suffix>
+                <os.classifier>mac-x86_64</os.classifier>
+                <cmake.generator>Unix Makefiles</cmake.generator>
+            </properties>
+        </profile>
+        <!-- Profile for mac aarch64 (mainly AMD Processors) (Self-Enabling) -->
+        <profile>
+            <id>.os-mac-aarch64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <os.suffix>mac</os.suffix>
+                <os.classifier>mac-aarch64</os.classifier>
+                <cmake.generator>Unix Makefiles</cmake.generator>
+            </properties>
+        </profile>
+        <!-- profile for windows x86_64 (mainly Intel Processors) (Self-Enabling) -->
+        <profile>
+            <id>.os-windows-x86_64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <os.suffix>win</os.suffix>
+                <os.classifier>windows-x86_64</os.classifier>
+                <cmake.generator>MinGW Makefiles</cmake.generator>
+            </properties>
+        </profile>
+        <!-- profile for windows amd64 (mainly AMD Processors) (Self-Enabling) -->
+        <profile>
+            <id>.os-windows-amd64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <os.suffix>win</os.suffix>
+                <os.classifier>windows-amd64</os.classifier>
+                <cmake.generator>MinGW Makefiles</cmake.generator>
+            </properties>
+        </profile>
+        <!-- profile for windows aarch64 (mainly newer Mac or Raspberry PI Processors) (Self-Enabling) -->
+        <profile>
+            <id>.os-windows-aarch64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <os.suffix>win</os.suffix>
+                <os.classifier>windows-aarch64</os.classifier>
+                <cmake.generator>MinGW Makefiles</cmake.generator>
+            </properties>
+        </profile>
+    </profiles>
+
+</project>
