@@ -3,14 +3,13 @@ package org.apache.plc4x.benchmarks.s7.base;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class BaseTest {
 
-    public TestResults run(String host, int rack, int slot) {
+    public TestResults run(String host, int rack, int slot, int numCycles, int cycleTime) {
         Map<String, Object> testConfig = new LinkedHashMap<>();
         testConfig.put("%DB4:0.0:BOOL", true);
         testConfig.put("%DB4:1:BYTE", (short) 42);
@@ -48,7 +47,6 @@ public abstract class BaseTest {
         try {
             int connectionTime;
             int disconnectionTime;
-            int numCycles = 300;
             int[] readTimes = new int[numCycles];
             try {
                 long startTime = System.currentTimeMillis();
@@ -56,27 +54,44 @@ public abstract class BaseTest {
                 long endTime = System.currentTimeMillis();
                 connectionTime = (int) (endTime - startTime);
 
-                for (int i = 0; i < 300; i++) {
-                    startTime = System.currentTimeMillis();
-                    Map<String, Object> results = read(tags);
-                    endTime = System.currentTimeMillis();
-                    int readTime = (int) (endTime - startTime);
+                AtomicInteger cycleNumber = new AtomicInteger(0);
+                CompletableFuture<Void> finished = new CompletableFuture<>();
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        int curCycleNumber = cycleNumber.incrementAndGet();
+                        try {
+                            long startTime = System.currentTimeMillis();
+                            Map<String, Object> results = read(tags);
+                            long endTime = System.currentTimeMillis();
+                            int readTime = (int) (endTime - startTime);
 
-                    // Check the results
-                    results.forEach((k, v) -> {
-                        if (v instanceof Throwable) {
-                            throw new RuntimeException("Error during read", (Throwable) v);
-                        }
-                        if (!expectedResults.containsKey(k)) {
-                            throw new RuntimeException("Unexpected result: " + k + " = " + v + " for tag address " + tags.get(k));
-                        }
-                        if (!expectedResults.get(k).equals(v)) {
-                            throw new RuntimeException("Unexpected result: " + k + " = " + v + " (expected: " + expectedResults.get(k) + ")" + " for tag address " + tags.get(k));
-                        }
-                    });
+                            // Check the results
+                            results.forEach((k, v) -> {
+                                if (v instanceof Throwable) {
+                                    throw new RuntimeException("Error during read", (Throwable) v);
+                                }
+                                if (!expectedResults.containsKey(k)) {
+                                    throw new RuntimeException("Unexpected result: " + k + " = " + v + " for tag address " + tags.get(k));
+                                }
+                                if (!expectedResults.get(k).equals(v)) {
+                                    throw new RuntimeException("Unexpected result: " + k + " = " + v + " (expected: " + expectedResults.get(k) + ")" + " for tag address " + tags.get(k));
+                                }
+                            });
 
-                    readTimes[i] = readTime;
-                }
+                            readTimes[curCycleNumber] = readTime;
+
+                            if (curCycleNumber == numCycles - 1) {
+                                finished.complete(null);
+                            }
+                        } catch (Exception e) {
+                            finished.completeExceptionally(e);
+                        }
+                    }
+                }, 0, cycleTime);
+                finished.get();
+                timer.cancel();
             } catch (Exception e) {
                 throw new RuntimeException("Error during test", e);
             } finally {
