@@ -12,15 +12,11 @@ import java.util.concurrent.TimeUnit;
 
 public class PLC4XS7Light extends BaseTest {
 
-    public static void main(String[] args) {
-        new PLC4XS7Light().run();
-    }
-
     private PlcConnection plcConnection;
 
     @Override
-    public void connect() throws Exception {
-        String connectionString = "s7-light://192.168.23.30";
+    public void connect(String host, int rack, int slot) throws Exception {
+        String connectionString = "s7-light://" + host + "?remote-rack=" + rack + "&remote-slot=" + slot;
         plcConnection = PlcDriverManager.getDefault().getConnectionManager().getConnection(connectionString);
     }
 

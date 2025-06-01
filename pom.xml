@@ -11,6 +11,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- S7 related connection parameters -->
+        <s7.host>192.168.23.30</s7.host>
+        <s7.rack>0</s7.rack>
+        <s7.slot>1</s7.slot>
     </properties>
 
     <modules>

@@ -15,23 +15,15 @@ import java.util.Map;
 
 public class Moka7 extends BaseTest {
 
-    public static void main(String[] args) {
-        new Moka7().run();
-    }
-
     private S7Client client;
 
     @Override
-    public void connect() throws Exception {
-        String ipAddress = "192.168.23.30";
-        int rack = 0;
-        int slot = 1;
-
+    public void connect(String host, int rack, int slot) throws Exception {
         // Create a new S7Client instance
         client = new S7Client();
-        int result = client.ConnectTo(ipAddress, rack, slot);
+        int result = client.ConnectTo(host, rack, slot);
         if (result != 0) {
-            throw new Exception("Connection to " + ipAddress + " failed. Error: " + S7Client.ErrorText(result));
+            throw new Exception("Connection to " + host + " failed. Error: " + S7Client.ErrorText(result));
         }
     }
 

@@ -22,8 +22,28 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <build>
+        <plugins>
+            <!--
+                Pass the connection parameters to all tests.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <environmentVariables>
+                        <S7_HOST>${s7.host}</S7_HOST>
+                        <S7_RACK>${s7.rack}</S7_RACK>
+                        <S7_SLOT>${s7.slot}</S7_SLOT>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <modules>
         <module>base</module>
+        <module>benchmark</module>
         <module>moka7</module>
         <module>plc4x</module>
         <module>s7connector</module>

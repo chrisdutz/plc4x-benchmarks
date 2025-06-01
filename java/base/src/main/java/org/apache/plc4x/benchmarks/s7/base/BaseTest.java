@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class BaseTest {
 
-    public TestResults run() {
+    public TestResults run(String host, int rack, int slot) {
         Map<String, Object> testConfig = new LinkedHashMap<>();
         testConfig.put("%DB4:0.0:BOOL", true);
         testConfig.put("%DB4:1:BYTE", (short) 42);
@@ -46,13 +46,13 @@ public abstract class BaseTest {
 
         // Execute the read operation
         try {
-            int connectionTime = 0;
-            int disconnectionTime = 0;
+            int connectionTime;
+            int disconnectionTime;
             int numCycles = 300;
             int[] readTimes = new int[numCycles];
             try {
                 long startTime = System.currentTimeMillis();
-                connect();
+                connect(host, rack, slot);
                 long endTime = System.currentTimeMillis();
                 connectionTime = (int) (endTime - startTime);
 
@@ -64,7 +64,7 @@ public abstract class BaseTest {
 
                     // Check the results
                     results.forEach((k, v) -> {
-                        if(v instanceof Throwable) {
+                        if (v instanceof Throwable) {
                             throw new RuntimeException("Error during read", (Throwable) v);
                         }
                         if (!expectedResults.containsKey(k)) {
@@ -77,6 +77,8 @@ public abstract class BaseTest {
 
                     readTimes[i] = readTime;
                 }
+            } catch (Exception e) {
+                throw new RuntimeException("Error during test", e);
             } finally {
                 long startTime = System.currentTimeMillis();
                 disconnect();
@@ -90,7 +92,7 @@ public abstract class BaseTest {
         }
     }
 
-    abstract public void connect() throws Exception;
+    abstract public void connect(String host, int rack, int slot) throws Exception;
 
     abstract public void disconnect() throws Exception;
 
