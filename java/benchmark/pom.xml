@@ -15,6 +15,26 @@
 
     <name>Benchmark: Java: Benchmark</name>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.3</version>
+                <configuration>
+                    <systemProperties>
+                        <host>${s7.host}</host>
+                        <remoteRack>${s7.rack}</remoteRack>
+                        <remoteSlot>${s7.slot}</remoteSlot>
+                        <tags>${s7.tags}</tags>
+                        <numCycles>${base.numCycles}</numCycles>
+                        <cycleTime>${base.cycleTime}</cycleTime>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>org.apahce.plg4x</groupId>
@@ -36,6 +56,13 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.5.18</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.12.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -15,10 +15,24 @@ import java.util.Map;
 
 public class S7Connector extends BaseTest {
 
+    private final String host;
+    private final int rack;
+    private final int slot;
     private com.github.s7connector.api.S7Connector connector;
 
+    public S7Connector(String host, int rack, int slot) {
+        this.host = host;
+        this.rack = rack;
+        this.slot = slot;
+    }
+
     @Override
-    public void connect(String host, int rack, int slot) throws Exception {
+    public String getName() {
+        return "S7Connector";
+    }
+
+    @Override
+    public void connect() throws Exception {
         connector = S7ConnectorFactory.buildTCPConnector()
                 .withHost(host)
                 .withRack(rack)

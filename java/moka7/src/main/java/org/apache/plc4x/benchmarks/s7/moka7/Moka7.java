@@ -15,10 +15,24 @@ import java.util.Map;
 
 public class Moka7 extends BaseTest {
 
+    private final String host;
+    private final int rack;
+    private final int slot;
     private S7Client client;
 
+    public Moka7(String host, int rack, int slot) {
+        this.host = host;
+        this.rack = rack;
+        this.slot = slot;
+    }
+
     @Override
-    public void connect(String host, int rack, int slot) throws Exception {
+    public String getName() {
+        return "Moka7";
+    }
+
+    @Override
+    public void connect() throws Exception {
         // Create a new S7Client instance
         client = new S7Client();
         int result = client.ConnectTo(host, rack, slot);

@@ -9,29 +9,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class BaseTest {
 
-    public TestResults run(String host, int rack, int slot, int numCycles, int cycleTime) {
+    public TestResults run(int numCycles, int cycleTime, Map<String, String> tagValues) {
         Map<String, Object> testConfig = new LinkedHashMap<>();
-        testConfig.put("%DB4:0.0:BOOL", true);
-        testConfig.put("%DB4:1:BYTE", (short) 42);
-        testConfig.put("%DB4:2:WORD", (int) 42424);
-        testConfig.put("%DB4:4:DWORD", (long) 4242442424L);
-        testConfig.put("%DB4:16:SINT", (byte) -42);
-        testConfig.put("%DB4:17:USINT", (short) 42);
-        testConfig.put("%DB4:18:INT", (short) -2424);
-        testConfig.put("%DB4:20:UINT", (int) 42424);
-        testConfig.put("%DB4:22:DINT", (int) -242442424);
-        testConfig.put("%DB4:26:UDINT", (long) 4242442424L);
-        testConfig.put("%DB4:46:REAL", (float) 3.141593F);
-        testConfig.put("%DB4:50:LREAL", (double) 2.71828182846D);
-        testConfig.put("%DB4:136:CHAR", "H");
-        testConfig.put("%DB4:138:WCHAR", "w");
-        testConfig.put("%DB4:140:STRING(10)", "hurz");
-        testConfig.put("%DB4:396:WSTRING(10)", "wolf");
-        testConfig.put("%DB4:58:TIME", Duration.parse("PT1.234S"));
-        testConfig.put("%DB4:70:DATE", LocalDate.parse("1998-03-28"));
-        testConfig.put("%DB4:72:TIME_OF_DAY", LocalTime.parse("15:36:30.123"));
-//        testConfig.put("%DB4:908:CHAR[5]", Arrays.asList(new PlcCHAR("w"), new PlcCHAR("i"), new PlcCHAR("e"), new PlcCHAR("s"), new PlcCHAR("e")));
-//        testConfig.put("%DB4:914:RAW_BYTE_ARRAY[11]", new byte[] {(byte) 1, (byte) 2, (byte) 3, (byte) 4, (byte) 5, (byte) 6, (byte) 7, (byte) 8, (byte) 9, (byte) 10, (byte) 11});
+        tagValues.forEach((address, valueString) -> {
+            testConfig.put(address, getValue(valueString));
+        });
 
         // Prepare the input and expected output maps
         Map<String, String> tags = new LinkedHashMap<>(testConfig.size());
@@ -50,7 +32,7 @@ public abstract class BaseTest {
             int[] readTimes = new int[numCycles];
             try {
                 long startTime = System.currentTimeMillis();
-                connect(host, rack, slot);
+                connect();
                 long endTime = System.currentTimeMillis();
                 connectionTime = (int) (endTime - startTime);
 
@@ -107,7 +89,29 @@ public abstract class BaseTest {
         }
     }
 
-    abstract public void connect(String host, int rack, int slot) throws Exception;
+    protected Object getValue(String value) {
+        String typeString = value.split(";")[0];
+        String valueString = value.split(";")[1];
+        return switch (typeString) {
+            case "boolean" -> Boolean.parseBoolean(valueString);
+            case "byte" -> Byte.parseByte(valueString);
+            case "short" -> Short.parseShort(valueString);
+            case "int" -> Integer.parseInt(valueString);
+            case "long" -> Long.parseLong(valueString);
+            case "float" -> Float.parseFloat(valueString);
+            case "double" -> Double.parseDouble(valueString);
+            case "char" -> valueString.substring(0, 1);
+            case "string" -> valueString;
+            case "time" -> Duration.parse(valueString);
+            case "date" -> LocalDate.parse(valueString);
+            case "time_of_day" -> LocalTime.parse(valueString);
+            default -> throw new RuntimeException("Unknown type: " + typeString);
+        };
+    }
+
+    abstract public String getName();
+
+    abstract public void connect() throws Exception;
 
     abstract public void disconnect() throws Exception;
 

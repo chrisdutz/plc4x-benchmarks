@@ -35,6 +35,7 @@
                         <S7_HOST>${s7.host}</S7_HOST>
                         <S7_RACK>${s7.rack}</S7_RACK>
                         <S7_SLOT>${s7.slot}</S7_SLOT>
+                        <S7_TAGS>§{s7.tags}</S7_TAGS>
                     </environmentVariables>
                 </configuration>
             </plugin>

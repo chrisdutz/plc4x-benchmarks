@@ -12,10 +12,35 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <!-- Base test settings -->
+        <base.numCycles>50</base.numCycles>
+        <base.cycleTime>300</base.cycleTime>
+
         <!-- S7 related connection parameters -->
         <s7.host>192.168.23.30</s7.host>
         <s7.rack>0</s7.rack>
         <s7.slot>1</s7.slot>
+        <s7.tags>
+            %DB4:0.0:BOOL|boolean;true
+            %DB4:1:BYTE|short;42
+            %DB4:2:WORD|int;42424
+            %DB4:4:DWORD|long;4242442424
+            %DB4:16:SINT|byte;-42
+            %DB4:17:USINT|short;42
+            %DB4:18:INT|short;-2424
+            %DB4:20:UINT|int;42424
+            %DB4:22:DINT|int;-242442424
+            %DB4:26:UDINT|long;4242442424
+            %DB4:46:REAL|float;3.141593
+            %DB4:50:LREAL|double;2.71828182846
+            %DB4:136:CHAR|char;H
+            %DB4:138:WCHAR|char;w
+            %DB4:140:STRING(10)|string;hurz
+            %DB4:396:WSTRING(10)|string;wolf
+            %DB4:58:TIME|time;PT1.234S
+            %DB4:70:DATE|date;1998-03-28
+            %DB4:72:TIME_OF_DAY|time_of_day;15:36:30.123
+        </s7.tags>
     </properties>
 
     <modules>
