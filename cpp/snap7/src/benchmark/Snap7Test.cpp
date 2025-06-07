@@ -60,7 +60,13 @@ std::map<std::string, PlcValue> Snap7Test::read(const std::map<std::string, std:
         std::vector<uint8_t> buffer(size);
 
         // Read the data
-        int result = Cli_ReadArea(client, area, dbNumber, start, 1, wordLen, buffer.data());
+        int numElements = 1;
+        if (type == PlcValueType::STRING) {
+            numElements = size;
+        } else if (type == PlcValueType::WSTRING) {
+            numElements = size;
+        }
+        int result = Cli_ReadArea(client, area, dbNumber, start, numElements, wordLen, buffer.data());
         if (result != 0) {
             char errorText[1024];
             Cli_ErrorText(result, errorText, sizeof(errorText));
@@ -147,14 +153,33 @@ std::map<std::string, PlcValue> Snap7Test::read(const std::map<std::string, std:
                 results[tagName] = PlcValue(value);
                 break;
             }
-            /*case S7WLString:
+            case PlcValueType::STRING:
                 {
                     // First byte is the max length, second byte is the actual length
                     int length = buffer[1];
                     std::string value(reinterpret_cast<char*>(buffer.data() + 2), length);
                     results[tagName] = PlcValue(value);
                 }
-                break;*/
+                break;
+            case PlcValueType::WSTRING:
+            {
+                const uint8_t* data = buffer.data();
+
+                // First byte is the max length, second byte is the actual length
+                int length = (buffer[2] << 8) | buffer[3];
+
+                std::u16string value;
+                value.reserve(length);
+
+                // Starting from byte 4, read `length` UTF-16 code units
+                for (int i = 0; i < length; ++i) {
+                    char16_t ch = (data[4 + i * 2] << 8) | data[4 + i * 2 + 1];
+                    value.push_back(ch);
+                }
+
+                results[tagName] = PlcValue(value);
+            }
+                break;
             default:
                 throw std::runtime_error("Unsupported word length: " + std::to_string(wordLen));
         }
@@ -165,7 +190,7 @@ std::map<std::string, PlcValue> Snap7Test::read(const std::map<std::string, std:
 
 void Snap7Test::parseAddress(const std::string& address, int& area, int& dbNumber, int& start, int& wordLen, int& size, PlcValueType& type) {
     // Parse address in the format "DB<db_number>.<byte_offset>.<bit_offset>.<data_type>"
-    std::regex dbPattern("%DB(\\d+)\\:(\\d+)(?:\\.(\\d+))?:(\\w+)");
+    std::regex dbPattern(R"(%DB(\d+):(\d+)(?:\.(\d+))?:(\w+)(?:\((\d+)\))?)");
     std::smatch matches;
 
     if (std::regex_match(address, matches, dbPattern)) {
@@ -173,6 +198,7 @@ void Snap7Test::parseAddress(const std::string& address, int& area, int& dbNumbe
         start = std::stoi(matches[2].str());
         int bitOffset = matches[3].matched ? std::stoi(matches[3].str()) : 0;
         std::string dataType = matches[4].str();
+        int stringLength = matches[5].matched ? std::stoi(matches[5].str()) : 0;
 
         area = S7AreaDB;
 
@@ -233,17 +259,22 @@ void Snap7Test::parseAddress(const std::string& address, int& area, int& dbNumbe
             type = PlcValueType::WCHAR;
             wordLen = S7WLWord;
             size = 2;
-            /*} else if (dataType.substr(0, 6) == "STRING") {
-            wordLen = S7WLString;
-            // Extract the string length from STRING[<length>]
-            std::regex stringPattern("STRING\\[(\\d+)\\]");
-            std::smatch stringMatches;
-            if (std::regex_match(dataType, stringMatches, stringPattern)) {
-                int stringLength = std::stoi(stringMatches[1].str());
-                size = stringLength + 2; // 2 bytes for max length and actual length
+        } else if (dataType == "STRING") {
+            type = PlcValueType::STRING;
+            wordLen = S7WLByte;
+            if (stringLength > 0) {
+                size = stringLength + 2;
             } else {
-                size = 256; // Default size
-            }*/
+                size = 254 + 2;
+            }
+        } else if (dataType == "WSTRING") {
+            type = PlcValueType::WSTRING;
+            wordLen = S7WLByte;
+            if (stringLength > 0) {
+                size = (stringLength * 2) + 4;
+            } else {
+                size = (254 * 2) * 4;
+            }
         } else {
             throw std::runtime_error("Unsupported data type: " + dataType);
         }

@@ -53,10 +53,10 @@ int main(int argc, char* argv[]) {
             //"%DB4:50:LREAL|LREAL;2.71828182846\n"
             "%DB4:50:LREAL|LREAL;2.7182807922363281\n"
             "%DB4:136:CHAR|CHAR;H\n"
-            "%DB4:138:WCHAR|WCHAR;w\n";
-            /*"%DB4:140:STRING(10)|STRING;hurz\n"
-            "%DB4:396:WSTRING(10)|WSTRING;wolf\n"
-            "%DB4:58:TIME|TIME;PT1.234S\n"
+            "%DB4:138:WCHAR|WCHAR;w\n"
+            "%DB4:140:STRING(10)|STRING;hurz\n"
+            "%DB4:396:WSTRING(10)|WSTRING;wolf\n";
+            /*"%DB4:58:TIME|TIME;PT1.234S\n"
             "%DB4:70:DATE|DATE;1998-03-28\n"
             "%DB4:72:TIME_OF_DAY|TIME_OF_DAY;15:36:30.123\n";*/
     

@@ -136,38 +136,40 @@ PlcValue BaseTest::getValue(const std::string& value) {
         return PlcValue(valueString);
     }
     if (typeString == "WSTRING") {
-        return PlcValue(valueString);
+        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+        std::u16string u16 = convert.from_bytes(valueString);
+        return PlcValue(u16);
     }
 
     if (typeString == "TIME") {
-
+        // TODO: Implement
     }
     if (typeString == "LTIME") {
-
+        // TODO: Implement
     }
     if (typeString == "DATE") {
-
+        // TODO: Implement
     }
     if (typeString == "LDATE") {
-
+        // TODO: Implement
     }
     if (typeString == "TIME_OF_DAY") {
-
+        // TODO: Implement
     }
     if (typeString == "LTIME_OF_DAY") {
-
+        // TODO: Implement
     }
     if (typeString == "DATE_AND_TIME") {
-
+        // TODO: Implement
     }
     if (typeString == "DATE_AND_LTIME") {
-
+        // TODO: Implement
     }
     if (typeString == "LDATE_AND_TIME") {
-
+        // TODO: Implement
     }
     if (typeString == "RAW_BYTE_ARRAY") {
-
+        // TODO: Implement
     }
     throw std::runtime_error("Unknown type: " + typeString);
 }
