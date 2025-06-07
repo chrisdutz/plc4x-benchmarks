@@ -155,7 +155,17 @@ PlcValue BaseTest::getValue(const std::string& value) {
         // TODO: Implement
     }
     if (typeString == "DATE") {
-        // TODO: Implement
+        // Parse date in format "YYYY-MM-DD"
+        std::regex dateRegex(R"(\d{4}-\d{2}-\d{2})");
+        if (!std::regex_match(valueString, dateRegex)) {
+            throw std::invalid_argument("Invalid date format. Expected YYYY-MM-DD");
+        }
+
+        int year = std::stoi(valueString.substr(0, 4));
+        int month = std::stoi(valueString.substr(5, 2));
+        int day = std::stoi(valueString.substr(8, 2));
+
+        return PlcValue(PlcDate(year, month, day));
     }
     if (typeString == "LDATE") {
         // TODO: Implement

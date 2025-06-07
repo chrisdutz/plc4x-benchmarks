@@ -188,6 +188,50 @@ std::map<std::string, PlcValue> Snap7Test::read(const std::map<std::string, std:
                     results[tagName] = PlcValue(durationInSeconds);
                 }
                 break;
+            case PlcValueType::DATE:
+                {
+                    // DATE values are represented as 4-byte integers containing "days since 01.01.1980"
+                    uint32_t days = static_cast<uint32_t>(buffer[0] << 8 | buffer[1]);
+
+                    // Base date: January 1, 1980
+                    int baseYear = 1990;
+                    int baseMonth = 1;
+                    int baseDay = 1;
+
+                    // Add days to the base date
+                    // This is a simple implementation that doesn't account for leap years correctly
+                    // For a production implementation, a more robust date calculation would be needed
+                    int year = baseYear;
+                    int month = baseMonth;
+                    int day = baseDay + days;
+
+                    // Adjust day, month, year
+                    int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+                    while (true) {
+                        // Check for leap year
+                        if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
+                            daysInMonth[2] = 29;
+                        } else {
+                            daysInMonth[2] = 28;
+                        }
+
+                        if (day <= daysInMonth[month]) {
+                            break;
+                        }
+
+                        day -= daysInMonth[month];
+                        month++;
+
+                        if (month > 12) {
+                            month = 1;
+                            year++;
+                        }
+                    }
+
+                    results[tagName] = PlcValue(PlcDate(year, month, day));
+                }
+                break;
             default:
                 throw std::runtime_error("Unsupported word length: " + std::to_string(wordLen));
         }
@@ -265,6 +309,10 @@ void Snap7Test::parseAddress(const std::string& address, int& area, int& dbNumbe
             size = 1;
         } else if (dataType == "WCHAR") {
             type = PlcValueType::WCHAR;
+            wordLen = S7WLWord;
+            size = 2;
+        } else if (dataType == "DATE") {
+            type = PlcValueType::DATE;
             wordLen = S7WLWord;
             size = 2;
         } else if (dataType == "STRING") {

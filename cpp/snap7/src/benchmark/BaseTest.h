@@ -5,7 +5,27 @@
 #include <map>
 #include <thread>
 #include <stdexcept>
+#include <chrono>
 #include "TestResults.h"
+
+/**
+ * Simple struct to represent a date.
+ */
+struct PlcDate {
+    int year;
+    int month;
+    int day;
+
+    PlcDate(int year, int month, int day) : year(year), month(month), day(day) {}
+
+    bool operator==(const PlcDate& other) const {
+        return year == other.year && month == other.month && day == other.day;
+    }
+
+    bool operator!=(const PlcDate& other) const {
+        return !(*this == other);
+    }
+};
 
 /**
  * Enum to identify the type of PlcValue.
@@ -76,6 +96,7 @@ public:
     explicit PlcValue(const std::string& value);
     explicit PlcValue(const std::u16string& value);
     explicit PlcValue(std::chrono::duration<double> value);
+    explicit PlcValue(const PlcDate& value);
 
     // Copy constructor and assignment operator
     PlcValue(const PlcValue& other);
@@ -104,6 +125,7 @@ public:
     std::string getString() const;
     std::u16string getWstring() const;
     std::chrono::duration<double> getDuration() const;
+    PlcDate getDate() const;
 
     // Comparison operators
     bool operator==(const PlcValue& other) const;

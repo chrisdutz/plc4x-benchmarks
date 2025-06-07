@@ -87,6 +87,10 @@ PlcValue::PlcValue(std::chrono::duration<double> val) : type(PlcValueType::TIME)
     value = new std::chrono::duration<double>(val);
 }
 
+PlcValue::PlcValue(const PlcDate& val) : type(PlcValueType::DATE) {
+    value = new PlcDate(val);
+}
+
 // Copy constructor
 PlcValue::PlcValue(const PlcValue& other) : type(other.type) {
     copyValue(other);
@@ -220,9 +224,16 @@ std::u16string PlcValue::getWstring() const {
 
 std::chrono::duration<double> PlcValue::getDuration() const {
     if (type != PlcValueType::TIME) {
-        throw std::runtime_error("PlcValue is not a wstring");
+        throw std::runtime_error("PlcValue is not a duration");
     }
     return *static_cast<std::chrono::duration<double>*>(value);
+}
+
+PlcDate PlcValue::getDate() const {
+    if (type != PlcValueType::DATE) {
+        throw std::runtime_error("PlcValue is not a date");
+    }
+    return *static_cast<PlcDate*>(value);
 }
 
 // Comparison operators
@@ -264,6 +275,8 @@ bool PlcValue::operator==(const PlcValue& other) const {
             return getWstring() == other.getWstring();
         case PlcValueType::TIME:
             return getDuration() == other.getDuration();
+        case PlcValueType::DATE:
+            return getDate() == other.getDate();
         default:
             return false;
     }
@@ -329,6 +342,9 @@ void PlcValue::freeValue() {
             case PlcValueType::TIME:
                 delete static_cast<std::chrono::duration<double>(*)>(value);
                 break;
+            case PlcValueType::DATE:
+                delete static_cast<PlcDate*>(value);
+                break;
         }
         value = nullptr;
     }
@@ -388,6 +404,9 @@ void PlcValue::copyValue(const PlcValue& other) {
             break;
         case PlcValueType::TIME:
             value = new std::chrono::duration<double>(other.getDuration());
+            break;
+        case PlcValueType::DATE:
+            value = new PlcDate(other.getDate());
             break;
     }
 }
