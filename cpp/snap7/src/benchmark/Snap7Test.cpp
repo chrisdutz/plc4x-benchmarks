@@ -232,6 +232,20 @@ std::map<std::string, PlcValue> Snap7Test::read(const std::map<std::string, std:
                     results[tagName] = PlcValue(PlcDate(year, month, day));
                 }
                 break;
+            case PlcValueType::TIME_OF_DAY:
+                {
+                    // TIME_OF_DAY values are represented as 4-byte unsigned integers containing milliseconds since midnight
+                    uint32_t millisecondsSinceMidnight = static_cast<uint32_t>((buffer[0] << 24) | (buffer[1] << 16) | (buffer[2] << 8) | buffer[3]);
+
+                    // Calculate hours, minutes, seconds, and milliseconds
+                    int hours = millisecondsSinceMidnight / (60 * 60 * 1000);
+                    int minutes = (millisecondsSinceMidnight % (60 * 60 * 1000)) / (60 * 1000);
+                    int seconds = (millisecondsSinceMidnight % (60 * 1000)) / 1000;
+                    int milliseconds = millisecondsSinceMidnight % 1000;
+
+                    results[tagName] = PlcValue(PlcTimeOfDay(hours, minutes, seconds, milliseconds));
+                }
+                break;
             default:
                 throw std::runtime_error("Unsupported word length: " + std::to_string(wordLen));
         }
@@ -333,6 +347,10 @@ void Snap7Test::parseAddress(const std::string& address, int& area, int& dbNumbe
             }
         } else if (dataType == "TIME") {
             type = PlcValueType::TIME;
+            wordLen = S7WLDWord;
+            size = 4;
+        } else if (dataType == "TIME_OF_DAY") {
+            type = PlcValueType::TIME_OF_DAY;
             wordLen = S7WLDWord;
             size = 4;
         } else {

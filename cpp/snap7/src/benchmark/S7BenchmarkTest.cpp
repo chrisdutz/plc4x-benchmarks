@@ -57,8 +57,8 @@ int main(int argc, char* argv[]) {
             "%DB4:140:STRING(10)|STRING;hurz\n"
             "%DB4:396:WSTRING(10)|WSTRING;wolf\n"
             "%DB4:58:TIME|TIME;PT1.234S\n"
-            "%DB4:70:DATE|DATE;1998-03-28\n";
-            /*"%DB4:72:TIME_OF_DAY|TIME_OF_DAY;15:36:30.123\n";*/
+            "%DB4:70:DATE|DATE;1998-03-28\n"
+            "%DB4:72:TIME_OF_DAY|TIME_OF_DAY;15:36:30.123\n";
     
     // Parse command line arguments (override environment variables)
     for (int i = 1; i < argc; i++) {

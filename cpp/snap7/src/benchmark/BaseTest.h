@@ -28,6 +28,28 @@ struct PlcDate {
 };
 
 /**
+ * Simple struct to represent a time of day.
+ */
+struct PlcTimeOfDay {
+    int hour;
+    int minute;
+    int second;
+    int millisecond;
+
+    PlcTimeOfDay(int hour, int minute, int second, int millisecond) 
+        : hour(hour), minute(minute), second(second), millisecond(millisecond) {}
+
+    bool operator==(const PlcTimeOfDay& other) const {
+        return hour == other.hour && minute == other.minute && 
+               second == other.second && millisecond == other.millisecond;
+    }
+
+    bool operator!=(const PlcTimeOfDay& other) const {
+        return !(*this == other);
+    }
+};
+
+/**
  * Enum to identify the type of PlcValue.
  */
 enum class PlcValueType {
@@ -97,6 +119,7 @@ public:
     explicit PlcValue(const std::u16string& value);
     explicit PlcValue(std::chrono::duration<double> value);
     explicit PlcValue(const PlcDate& value);
+    explicit PlcValue(const PlcTimeOfDay& value);
 
     // Copy constructor and assignment operator
     PlcValue(const PlcValue& other);
@@ -126,6 +149,7 @@ public:
     std::u16string getWstring() const;
     std::chrono::duration<double> getDuration() const;
     PlcDate getDate() const;
+    PlcTimeOfDay getTimeOfDay() const;
 
     // Comparison operators
     bool operator==(const PlcValue& other) const;

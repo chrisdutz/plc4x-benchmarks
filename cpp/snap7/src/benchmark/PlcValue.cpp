@@ -91,6 +91,10 @@ PlcValue::PlcValue(const PlcDate& val) : type(PlcValueType::DATE) {
     value = new PlcDate(val);
 }
 
+PlcValue::PlcValue(const PlcTimeOfDay& val) : type(PlcValueType::TIME_OF_DAY) {
+    value = new PlcTimeOfDay(val);
+}
+
 // Copy constructor
 PlcValue::PlcValue(const PlcValue& other) : type(other.type) {
     copyValue(other);
@@ -236,6 +240,13 @@ PlcDate PlcValue::getDate() const {
     return *static_cast<PlcDate*>(value);
 }
 
+PlcTimeOfDay PlcValue::getTimeOfDay() const {
+    if (type != PlcValueType::TIME_OF_DAY) {
+        throw std::runtime_error("PlcValue is not a time of day");
+    }
+    return *static_cast<PlcTimeOfDay*>(value);
+}
+
 // Comparison operators
 bool PlcValue::operator==(const PlcValue& other) const {
     if (type != other.type) {
@@ -277,6 +288,8 @@ bool PlcValue::operator==(const PlcValue& other) const {
             return getDuration() == other.getDuration();
         case PlcValueType::DATE:
             return getDate() == other.getDate();
+        case PlcValueType::TIME_OF_DAY:
+            return getTimeOfDay() == other.getTimeOfDay();
         default:
             return false;
     }
@@ -345,6 +358,9 @@ void PlcValue::freeValue() {
             case PlcValueType::DATE:
                 delete static_cast<PlcDate*>(value);
                 break;
+            case PlcValueType::TIME_OF_DAY:
+                delete static_cast<PlcTimeOfDay*>(value);
+                break;
         }
         value = nullptr;
     }
@@ -407,6 +423,9 @@ void PlcValue::copyValue(const PlcValue& other) {
             break;
         case PlcValueType::DATE:
             value = new PlcDate(other.getDate());
+            break;
+        case PlcValueType::TIME_OF_DAY:
+            value = new PlcTimeOfDay(other.getTimeOfDay());
             break;
     }
 }

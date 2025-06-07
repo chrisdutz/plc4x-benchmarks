@@ -171,7 +171,31 @@ PlcValue BaseTest::getValue(const std::string& value) {
         // TODO: Implement
     }
     if (typeString == "TIME_OF_DAY") {
-        // TODO: Implement
+        // Parse time of day in format "HH:MM:SS.mmm"
+        std::regex timeRegex(R"((\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?)");
+        std::smatch match;
+
+        if (!std::regex_match(valueString, match, timeRegex)) {
+            throw std::invalid_argument("Invalid time of day format. Expected HH:MM:SS.mmm");
+        }
+
+        int hour = std::stoi(match[1].str());
+        int minute = std::stoi(match[2].str());
+        int second = std::stoi(match[3].str());
+        int millisecond = match[4].matched ? std::stoi(match[4].str()) : 0;
+
+        // Pad milliseconds if needed (e.g., if .12 was provided, it means 120 milliseconds)
+        if (match[4].matched && match[4].length() < 3) {
+            millisecond *= pow(10, 3 - match[4].length());
+        }
+
+        // Validate time components
+        if (hour < 0 || hour > 23 || minute < 0 || minute > 59 || 
+            second < 0 || second > 59 || millisecond < 0 || millisecond > 999) {
+            throw std::invalid_argument("Invalid time of day values");
+        }
+
+        return PlcValue(PlcTimeOfDay(hour, minute, second, millisecond));
     }
     if (typeString == "LTIME_OF_DAY") {
         // TODO: Implement
