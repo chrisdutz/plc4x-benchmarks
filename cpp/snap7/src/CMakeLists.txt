@@ -109,5 +109,5 @@ INSTALL (
         include/snap7
 )
 
-#ADD_SUBDIRECTORY (examples)
-
+# Add the benchmark directory
+ADD_SUBDIRECTORY (benchmark)
