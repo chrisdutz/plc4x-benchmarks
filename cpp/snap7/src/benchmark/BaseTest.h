@@ -75,6 +75,7 @@ public:
     explicit PlcValue(char16_t value);
     explicit PlcValue(const std::string& value);
     explicit PlcValue(const std::u16string& value);
+    explicit PlcValue(std::chrono::duration<double> value);
 
     // Copy constructor and assignment operator
     PlcValue(const PlcValue& other);
@@ -102,6 +103,7 @@ public:
     char16_t getChar16() const;
     std::string getString() const;
     std::u16string getWstring() const;
+    std::chrono::duration<double> getDuration() const;
 
     // Comparison operators
     bool operator==(const PlcValue& other) const;

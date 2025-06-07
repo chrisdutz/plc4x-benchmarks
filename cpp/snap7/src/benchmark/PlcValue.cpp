@@ -83,6 +83,10 @@ PlcValue::PlcValue(const std::u16string& val) : type(PlcValueType::WSTRING) {
     value = new std::u16string(val);
 }
 
+PlcValue::PlcValue(std::chrono::duration<double> val) : type(PlcValueType::TIME) {
+    value = new std::chrono::duration<double>(val);
+}
+
 // Copy constructor
 PlcValue::PlcValue(const PlcValue& other) : type(other.type) {
     copyValue(other);
@@ -214,6 +218,13 @@ std::u16string PlcValue::getWstring() const {
     return *static_cast<std::u16string*>(value);
 }
 
+std::chrono::duration<double> PlcValue::getDuration() const {
+    if (type != PlcValueType::TIME) {
+        throw std::runtime_error("PlcValue is not a wstring");
+    }
+    return *static_cast<std::chrono::duration<double>*>(value);
+}
+
 // Comparison operators
 bool PlcValue::operator==(const PlcValue& other) const {
     if (type != other.type) {
@@ -251,6 +262,8 @@ bool PlcValue::operator==(const PlcValue& other) const {
             return getString() == other.getString();
         case PlcValueType::WSTRING:
             return getWstring() == other.getWstring();
+        case PlcValueType::TIME:
+            return getDuration() == other.getDuration();
         default:
             return false;
     }
@@ -313,6 +326,9 @@ void PlcValue::freeValue() {
             case PlcValueType::WSTRING:
                 delete static_cast<std::u16string*>(value);
                 break;
+            case PlcValueType::TIME:
+                delete static_cast<std::chrono::duration<double>(*)>(value);
+                break;
         }
         value = nullptr;
     }
@@ -369,6 +385,9 @@ void PlcValue::copyValue(const PlcValue& other) {
             break;
         case PlcValueType::WSTRING:
             value = new std::u16string(other.getWstring());
+            break;
+        case PlcValueType::TIME:
+            value = new std::chrono::duration<double>(other.getDuration());
             break;
     }
 }

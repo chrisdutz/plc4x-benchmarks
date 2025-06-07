@@ -162,23 +162,31 @@ std::map<std::string, PlcValue> Snap7Test::read(const std::map<std::string, std:
                 }
                 break;
             case PlcValueType::WSTRING:
-            {
-                const uint8_t* data = buffer.data();
+                {
+                    const uint8_t* data = buffer.data();
 
-                // First byte is the max length, second byte is the actual length
-                int length = (buffer[2] << 8) | buffer[3];
+                    // First byte is the max length, second byte is the actual length
+                    int length = (buffer[2] << 8) | buffer[3];
 
-                std::u16string value;
-                value.reserve(length);
+                    std::u16string value;
+                    value.reserve(length);
 
-                // Starting from byte 4, read `length` UTF-16 code units
-                for (int i = 0; i < length; ++i) {
-                    char16_t ch = (data[4 + i * 2] << 8) | data[4 + i * 2 + 1];
-                    value.push_back(ch);
+                    // Starting from byte 4, read `length` UTF-16 code units
+                    for (int i = 0; i < length; ++i) {
+                        char16_t ch = (data[4 + i * 2] << 8) | data[4 + i * 2 + 1];
+                        value.push_back(ch);
+                    }
+
+                    results[tagName] = PlcValue(value);
                 }
-
-                results[tagName] = PlcValue(value);
-            }
+                break;
+            case PlcValueType::TIME:
+                {
+                    uint32_t milliseconds = static_cast<uint32_t>(buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3]);
+                    double seconds = static_cast<double>(milliseconds) / 1000;
+                    std::chrono::duration<double> durationInSeconds(seconds);
+                    results[tagName] = PlcValue(durationInSeconds);
+                }
                 break;
             default:
                 throw std::runtime_error("Unsupported word length: " + std::to_string(wordLen));
@@ -275,6 +283,10 @@ void Snap7Test::parseAddress(const std::string& address, int& area, int& dbNumbe
             } else {
                 size = (254 * 2) * 4;
             }
+        } else if (dataType == "TIME") {
+            type = PlcValueType::TIME;
+            wordLen = S7WLDWord;
+            size = 4;
         } else {
             throw std::runtime_error("Unsupported data type: " + dataType);
         }

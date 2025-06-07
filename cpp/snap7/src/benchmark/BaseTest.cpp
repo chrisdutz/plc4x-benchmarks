@@ -1,6 +1,7 @@
 #include "BaseTest.h"
 
 #include <codecvt>
+#include <regex>
 
 TestResults BaseTest::run(int numCycles, int cycleTime, const std::map<std::string, std::string>& tagValues) {
     // Prepare the input and expected output maps
@@ -142,7 +143,13 @@ PlcValue BaseTest::getValue(const std::string& value) {
     }
 
     if (typeString == "TIME") {
-        // TODO: Implement
+        std::regex re(R"(PT(\d+(?:\.\d+)?)S)");
+        std::smatch match;
+        if (std::regex_match(valueString, match, re)) {
+            double seconds = std::stod(match[1].str());
+            return PlcValue(std::chrono::duration<double>(seconds));
+        }
+        throw std::invalid_argument("Invalid duration format");
     }
     if (typeString == "LTIME") {
         // TODO: Implement
