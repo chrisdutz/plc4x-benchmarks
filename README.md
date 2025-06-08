@@ -7,7 +7,7 @@ For read request, we run a number of read operations in timed cycles and measure
 As reading the items as fast as possible would not have been a representative test, I designed it to implement a more typical use-case to read all tags in regular intervals, which are the same for all drivers.
 The smallest interval, that all drivers were able to operate under was 300 ms, so that was the interval I chose for running the final benchmark.
 
-## TL/DR - Results
+## TL/DR - Results (Read performance using S7Comm)
 
 ![Benchmark-Results.png](img/Benchmark-Results.png)
 
