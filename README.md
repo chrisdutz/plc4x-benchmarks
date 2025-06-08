@@ -73,6 +73,15 @@ Scenario: 19 tags, 50 cycles, 300ms intervals
 ````
 ![Benchmark-Results.png](img/Benchmark-Results.png)
 
+| Driver         | Connection Speed (ms) | Disconnect Speed (ms) | Avg Read Speed (ms) | Multi-Item Requests     | Datatypes |
+|----------------|-----------------------|-----------------------|---------------------|-------------------------|-----------|
+| PLC4J S7       | 78                    | 2                     | 35                  | true                    | all       |
+| PLC4J S7-Light | 81                    | 2008                  | 17                  | true                    | all       |
+| Moka7          | 73                    | 0                     | 226                 | false                   | some      |
+| S7Connector    | 79                    | 0                     | 228                 | false                   | some      |
+| Snap7          | 62                    | 0                     | 231                 | false                   | some      |
+| Snap7 Opt.     | 83                    | 0                     | 42                  | true (manual splitting) | some      |
+
 ### PLC4J S7
 
 ````
