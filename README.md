@@ -4,13 +4,29 @@
 In this project, we try to run read requests with an identical set of tags against the same instance of a PLC and measure the time required for connecting, reading and disconnecting. 
 For read request, we run a number of read operations in timed cycles and measure the average time needed to execute the operations.
 
+As reading the items as fast as possible would not have been a representative test, I designed it to implement a more typical use-case to read all tags in regular intervals, which are the same for all drivers.
+The smallest interval, that all drivers were able to operate under was 300 ms, so that was the interval I chose for running the final benchmark.
+
+## TL/DR - Results
+
+![Benchmark-Results.png](img/Benchmark-Results.png)
+
+| Driver          | Connection Speed (ms) | Avg Read Speed (ms) | Multi-Item Requests     | Datatypes |
+|-----------------|-----------------------|---------------------|-------------------------|-----------|
+| PLC4J S7        | 78                    | 35                  | true                    | all       |
+| PLC4J S7-Light  | 81                    | 17                  | true                    | all       |
+| Moka7           | 73                    | 226                 | false                   | some      |
+| S7Connector     | 79                    | 228                 | false                   | some      |
+| Snap7           | 62                    | 231                 | false                   | some      |
+| Snap7 Optimized | 83                    | 42                  | true (manual splitting) | some      |
+
 ## Java
 
 Summary of the Java-Based libraries that are available.
 
 ### PLC4X
 
-This is the baseline implementation the other libraries `compete` against.
+This is the baseline implementation the other libraries compete against.
 
 Here we have implemented two variants of drivers. 
 Therefore, there are also two test results.
@@ -23,7 +39,7 @@ This implementation uses the initial optimizer, that groups together tags into m
 
 #### S7-Light
 
-This is a new implementation, that is stripped down in order to avoid some of the issues the more complex communication usually causes.
+This is a new implementation, that is stripped down to avoid some of the issues the more complex communication usually causes.
 
 In addition, the `s7-light` driver uses a different optimizer per default.
 This optimizer automatically groups together tags in proximity in the PLC memory, resulting in much more optimized access speeds.
@@ -71,16 +87,6 @@ In this implementation, we utilize the multi-item requests features of the Snap7
 ````
 Scenario: 19 tags, 50 cycles, 300ms intervals
 ````
-![Benchmark-Results.png](img/Benchmark-Results.png)
-
-| Driver         | Connection Speed (ms) | Disconnect Speed (ms) | Avg Read Speed (ms) | Multi-Item Requests     | Datatypes |
-|----------------|-----------------------|-----------------------|---------------------|-------------------------|-----------|
-| PLC4J S7       | 78                    | 2                     | 35                  | true                    | all       |
-| PLC4J S7-Light | 81                    | 2008                  | 17                  | true                    | all       |
-| Moka7          | 73                    | 0                     | 226                 | false                   | some      |
-| S7Connector    | 79                    | 0                     | 228                 | false                   | some      |
-| Snap7          | 62                    | 0                     | 231                 | false                   | some      |
-| Snap7 Opt.     | 83                    | 0                     | 42                  | true (manual splitting) | some      |
 
 ### PLC4J S7
 
