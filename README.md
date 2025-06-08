@@ -71,49 +71,7 @@ In this implementation, we utilize the multi-item requests features of the Snap7
 ````
 Scenario: 19 tags, 50 cycles, 300ms intervals
 ````
-
-<canvas id="readTimesChart" width="600" height="300"></canvas>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  const ctx = document.getElementById('readTimesChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: [
-        'PLC4X S7',
-        'PLC4X S7-Light',
-        'Moka7',
-        'S7Connector',
-        'Snap7',
-        'Snap7-Optimized'
-      ],
-      datasets: [{
-        label: 'Avg Read Time (ms)',
-        data: [35, 17, 226, 228, 231, 42],
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Milliseconds'
-          }
-        }
-      },
-      plugins: {
-        title: {
-          display: true,
-          text: 'Average Read Request Time per Driver'
-        }
-      }
-    }
-  });
-</script>
+![Benchmark-Results.png](img/Benchmark-Results.png)
 
 ### PLC4J S7
 
