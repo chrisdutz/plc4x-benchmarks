@@ -1,4 +1,5 @@
 #include "Snap7Test.h"
+#include "Snap7OptimizedTest.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -122,6 +123,9 @@ int main(int argc, char* argv[]) {
     // Run the test
     Snap7Test snap7Test(host, remoteRack, remoteSlot);
     runTest(snap7Test, numCycles, cycleTime, tagValues);
+
+    Snap7OptimizedTest snap7OptimizedTest(host, remoteRack, remoteSlot);
+    runTest(snap7OptimizedTest, numCycles, cycleTime, tagValues);
     
     return 0;
 }

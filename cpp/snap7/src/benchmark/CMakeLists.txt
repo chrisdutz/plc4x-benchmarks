@@ -6,6 +6,7 @@ ADD_EXECUTABLE(s7_benchmark
     S7BenchmarkTest.cpp
     BaseTest.cpp
     Snap7Test.cpp
+    Snap7OptimizedTest.cpp
     PlcValue.cpp
 )
 
